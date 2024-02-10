@@ -1,10 +1,12 @@
 from sqlalchemy import select
 from sqlalchemy import text
+import pytest
 from src.infra.db.repositories.users_repository import UsersRepository
 from src.infra.db.settings.connection import DBConnectionHandler
 from src.infra.db.entities.users import Users as UsersEntity
 
 
+@pytest.mark.skip(reason="Sensive test")
 def test_insert_user():
     mocked_first_name = "first"
     mocked_last_name = "last"
@@ -25,8 +27,10 @@ def test_insert_user():
         & (user.age == mocked_age)
     )
 
+    users.delete_user(user_id=id_user_inserted)
 
-# Código do curso
+
+@pytest.mark.skip(reason="Sensive test")
 def test_insert_user_2():
     mocked_first_name = "first"
     mocked_last_name = "last"
@@ -48,9 +52,17 @@ def test_insert_user_2():
     db_connection_handler = DBConnectionHandler()
     connection = db_connection_handler.get_engine().connect()
     response = connection.execute(text(sql))
-    registry = response.fetchall()
-    print(registry)
+    registry = response.fetchall()[0]
+
+    assert registry.first_name == mocked_first_name
+    assert registry.last_name == mocked_last_name
+    assert registry.age == mocked_age
+
+    connection.execute(text(f"DELETE FROM clean_arch.users WHERE id = {registry.id}"))
+    connection.commit()
+    connection.close()
 
 
 if __name__ == "__main__":
+    test_insert_user()
     test_insert_user_2()
