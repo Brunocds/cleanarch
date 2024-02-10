@@ -17,3 +17,15 @@ class UsersRepository:
             except Exception as e:
                 database.session.rollback()
                 raise e
+
+    @classmethod
+    def delete_user(cls, user_id: int) -> None:
+        with DBConnectionHandler() as database:
+            try:
+                database.session.query(UsersEntity).where(
+                    UsersEntity.id == user_id
+                ).delete()
+                database.session.commit()
+            except Exception as e:
+                database.session.rollback()
+                raise e
