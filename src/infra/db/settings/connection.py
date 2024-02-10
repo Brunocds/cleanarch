@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import NullPool
 
 
 class DBConnectionHandler:
@@ -17,7 +18,10 @@ class DBConnectionHandler:
         self.session = None
 
     def __create_database_engine(self):
-        engine = create_engine(self.__connection_string)
+        # The NullPool makes the session.close() really close the connection. Without this config, even running the
+        # session.close() the connection was kept open. See
+        # https://stackoverflow.com/questions/21738944/how-to-close-a-sqlalchemy-session for more information
+        engine = create_engine(self.__connection_string, poolclass=NullPool)
         return engine
 
     def get_engine(self):
