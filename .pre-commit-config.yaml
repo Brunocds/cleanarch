@@ -3,7 +3,7 @@ repos:
     hooks:
       - id: pylint
         name: pylint
-        entry: python3 -m pylint
+        entry: pylint
         language: system
         types: [python]
         args:
