@@ -30,6 +30,7 @@ def test_insert_user():
     users.delete_user(user_id=id_user_inserted)
 
 
+# The insert function below is redundant but is the one from the course. Keeping it here just for historic
 @pytest.mark.skip(reason="Sensive test")
 def test_insert_user_2():
     mocked_first_name = "first"
@@ -63,6 +64,37 @@ def test_insert_user_2():
     connection.close()
 
 
+def test_select_user():
+    mocked_first_name = "firstname"
+    mocked_last_name = "lastname"
+    mocked_age = 10
+
+    db_connection_handler = DBConnectionHandler()
+    connection = db_connection_handler.get_engine().connect()
+    sql = f"""
+        INSERT INTO clean_arch.users (first_name, last_name, age)
+        VALUES ('{mocked_first_name}', '{mocked_last_name}', '{mocked_age}')
+    """
+    connection.execute(text(sql))
+    connection.commit()
+
+    users = UsersRepository()
+    list_of_users = users.select_user(first_name=mocked_first_name)
+
+    assert list_of_users[0].first_name == mocked_first_name
+    assert list_of_users[0].last_name == mocked_last_name
+    assert list_of_users[0].age == mocked_age
+
+    sql = f"""
+        DELETE FROM clean_arch.users 
+        WHERE id = '{list_of_users[0].id}'
+    """
+    connection.execute(text(sql))
+    connection.commit()
+    connection.close()
+
+
 if __name__ == "__main__":
-    test_insert_user()
-    test_insert_user_2()
+    # test_insert_user()
+    # test_insert_user_2()
+    test_select_user()
