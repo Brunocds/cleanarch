@@ -1,3 +1,4 @@
+from typing import List
 from src.infra.db.settings.connection import DBConnectionHandler
 from src.infra.db.entities.users import Users as UsersEntity
 
@@ -14,6 +15,20 @@ class UsersRepository:
                 database.session.add(new_registry)
                 database.session.commit()
                 return new_registry.id
+            except Exception as e:
+                database.session.rollback()
+                raise e
+
+    @classmethod
+    def select_user(cls, first_name: str) -> List[UsersEntity]:
+        with DBConnectionHandler() as database:
+            try:
+                users = (
+                    database.session.query(UsersEntity)
+                    .filter(UsersEntity.first_name == first_name)
+                    .all()
+                )
+                return users
             except Exception as e:
                 database.session.rollback()
                 raise e
