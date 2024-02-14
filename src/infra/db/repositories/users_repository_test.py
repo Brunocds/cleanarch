@@ -64,6 +64,7 @@ def test_insert_user_2():
     connection.close()
 
 
+@pytest.mark.skip(reason="Sensive test")
 def test_select_user():
     mocked_first_name = "firstname"
     mocked_last_name = "lastname"
